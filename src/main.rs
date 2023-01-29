@@ -1,7 +1,7 @@
-pub mod client;
-pub mod server;
+use client;
+use serveur;
 
 fn main() 
 {
-    server::main();
+    serveur::main_serveur();
 }
