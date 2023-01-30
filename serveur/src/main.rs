@@ -61,8 +61,7 @@ fn main()
             println!("L'adresse est déjà utilisé");
             process::exit(0);
         },
-        Ok(listener) => listener,
-        
+        Ok(listener) => listener,  
     };
     // Nous mettons un drapeau non-bloquant du serveur en true
     listener.set_nonblocking(true).expect("Erreur d'initalisation de non-bloquant");
@@ -126,6 +125,7 @@ fn main()
                 // Elle permet à notre boucle de se reposer pendant qu'elle ne reçoit pas de messages
                 sleep();
             });
+        }    
             if let Ok(message) = receiver.try_recv()
             {
                 clients = clients.into_iter().filter_map(|mut client| 
@@ -141,8 +141,8 @@ fn main()
                     client.write_all(&buffer).map(|_| client).ok()
                 }).collect::<Vec<_>>();
             }
-            // Fait dormir le thread pendant 100 milisecondes
-            sleep();
+                // Fait dormir le thread pendant 100 milisecondes
+                sleep();
         }
-    }
 }
+

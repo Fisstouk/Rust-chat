@@ -70,54 +70,54 @@ fn main()
     
     // On spawn un thread et on créer une fermeture de move à l'intérieur de la boucle
     thread::spawn(move || loop
-        {
-            // On créer un buffer mutable avec un vecteur avec des 0 dedans
-            let mut client_buffer = vec![0; MESSAGE];
+    {
+        // On créer un buffer mutable avec un vecteur avec des 0 dedans
+        let mut client_buffer = vec![0; MESSAGE];
             
-            // On lit le message via le buffer
-            match client.read_exact(&mut client_buffer) 
+        // On lit le message via le buffer
+        match client.read_exact(&mut client_buffer) 
+        {
+            Ok(_) => 
             {
-                Ok(_) => 
-                {
-                    // Le message est égal au buffer, on le transforme en iterator,
-                    // On vérifie si les références sont égales à 0, on les collectes tous à l'intérieur du vecteur
-                    // Tous ceux qui sont égales à zéro seront défait
-                    let message = client_buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
-                    let message = String::from_utf8(message).expect("Message utf8 invalide");
-                    println!("Message :{:?}", message);
-                },
-                // Si le type d'erreur est égale à une erreur qui bloquerait notre non-bloquage, nous renvoyons alors le type d'unite
-                Err(ref erreur) if erreur.kind() == ErrorKind::WouldBlock => (),
+                // Le message est égal au buffer, on le transforme en iterator,
+                // On vérifie si les références sont égales à 0, on les collectes tous à l'intérieur du vecteur
+                // Tous ceux qui sont égales à zéro seront défait
+                let message = client_buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
+                let message = str::from_utf8(&message).unwrap();
+                println!("Message :{:?}", message);
+            },
+            // Si le type d'erreur est égale à une erreur qui bloquerait notre non-bloquage, nous renvoyons alors le type d'unite
+            Err(ref erreur) if erreur.kind() == ErrorKind::WouldBlock => (),
 
-                // Si nous avons une erreur, nous fermerons la connexion puis nous sortirons de la boucle
-                Err(_) =>
-                {
-                    println!("Déconnexion du serveur");
-                    process::exit(0);
-                }
-            }
-            match receiver.try_recv()
+            // Si nous avons une erreur, nous fermerons la connexion puis nous sortirons de la boucle
+            Err(_) =>
             {
-                Ok(message) =>
-                {
-                    // On clone le message en octets et on le met dans le buffer
-                    let mut client_buffer = message.clone().into_bytes();
-                    
-                    // On redimenssionne le buffer par la taille du MESSAGE
-                    client_buffer.resize(MESSAGE, 0);
-                    
-                    // On écrit tous les buffer dans notre client
-                    client.write_all(&client_buffer).expect("Echec d'écriture sur la socket");
-                    // Affiche notre message
-                },
-                // Vérifier si notre erreur est vide et si c'est le cas de renvoyer le type d'unité
-                Err(TryRecvError::Empty) => (),
-                
-                // S'il s'agit d'une déconnexion alors on sort de la boucle
-                Err(TryRecvError::Disconnected) => break
+                println!("Déconnexion du serveur");
+                process::exit(0);
             }
-            // Fait dormir le thread pendant 100 milisecondes
-            sleep();
+        }
+        match receiver.try_recv()
+        {
+            Ok(message) =>
+            {
+                // On clone le message en octets et on le met dans le buffer
+                let mut client_buffer = message.clone().into_bytes();
+                    
+                // On redimenssionne le buffer par la taille du MESSAGE
+                client_buffer.resize(MESSAGE, 0);
+                    
+                // On écrit tous les buffer dans notre client
+                client.write_all(&client_buffer).expect("Echec d'écriture sur la socket");
+                // Affiche notre message
+            },
+            // Vérifier si notre erreur est vide et si c'est le cas de renvoyer le type d'unité
+            Err(TryRecvError::Empty) => (),
+                
+            // S'il s'agit d'une déconnexion alors on sort de la boucle
+            Err(TryRecvError::Disconnected) => break
+        }
+        // Fait dormir le thread pendant 100 milisecondes
+        sleep();
     });
     // Affichage lors de l'ouverture du client
     println!("=============================");
