@@ -1,11 +1,5 @@
-[workspace]
-members = [
-    "client",
-    "serveur",
-]
-
 [package]
-name = "rust_chat"
+name = "client"
 version = "0.1.0"
 edition = "2021"
 authors = ["Mathis THOUVENIN <thouvenin.mathis@gmail.com>"]
