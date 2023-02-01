@@ -7,3 +7,4 @@ authors = ["Mathis THOUVENIN <thouvenin.mathis@gmail.com>"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+openssl = "0.10.45"
