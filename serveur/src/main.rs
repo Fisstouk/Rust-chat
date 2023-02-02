@@ -5,7 +5,8 @@ use std::process;
 use std::str;
 use std::sync::mpsc;
 use std::time::Duration;
-use openssl::rsa::{Rsa, Padding};
+use openssl::rsa::{Rsa,Padding};
+// use openssl::pkey;
 
 // L'adresse et le port
 const HOST: &str = "127.0.0.1:8080";
@@ -45,13 +46,21 @@ impl Programme
 }
 */
 
-// fn encrypt_message(message: String) -> String {
-//     let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
-//     let mut buf = vec![0; rsa.size() as usize];
-//     let encrypted_len = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
+fn encryption(message: String) -> String {
+    let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
+    let mut buf = vec![0; rsa.size() as usize];
+    let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
 
-//     encrypted_len.to_string()
-// }
+    message.to_string()
+}
+
+fn decryption(encrypted_message: String) -> String {
+    let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
+    let mut buf_decrypt = vec![0; rsa.size() as usize];
+    let message_decrypt = rsa.private_decrypt(encrypted_message.as_bytes(), &mut buf_decrypt, Padding::PKCS1).unwrap();
+
+    message_decrypt.to_string()
+}
 
 // La fonction sleep permet de notre thread de dormir un instant (100 milisecondes)
 fn sleep()
@@ -115,26 +124,15 @@ fn main()
                         let message = buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
                         let message = String::from_utf8(message).expect("Message utf8 invalide");
 
-                        // encrypt_message(message);
+                        let message_encrypted = encryption(message);
 
-                        let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
-                        let mut buf = vec![0; rsa.size() as usize];
-                        let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
+                        // println!("{message_decrypt}");
 
-                        // println!("{message}");
-
-                        // let message = message.to_string();
-                        // let message = message.as_bytes();
-
-                        // let message_decrypt = rsa.public_decrypt(message, &mut buf, Padding::PKCS1).unwrap();
-                        
                         // On affiche l'adresse envoyée du message 
-                        println!("{}: {:?}", addr, message);
-
-                        
+                        println!("{}: {:?}", addr, message_encrypted);
 
                         // Envoyer un message via notre envoyeur au réceptionneur
-                        sender.send(message.to_string()).expect("Echec d'envoie du message");
+                        sender.send(message_encrypted).expect("Echec d'envoie du message");
                     },
                     // Si le type d'erreur est égal à une erreur qui bloquerait notre non-bloquant nous renvoyons le type d'unité
                     Err(ref erreur) if erreur.kind() == ErrorKind::WouldBlock => (),
@@ -151,12 +149,14 @@ fn main()
                 sleep();
             });
         }    
-            if let Ok(message) = receiver.try_recv()
+            if let Ok(message_encrypted) = receiver.try_recv()
             {
+                let message_decrypted = decryption(message_encrypted);
+
                 clients = clients.into_iter().filter_map(|mut client| 
                 {
                     // On définit le buffer égal au message qui est cloner et convertit en octets
-                    let mut buffer = message.clone().into_bytes();
+                    let mut buffer = message_decrypted.clone().into_bytes();
 
                     // Redimenssion du buffer en fonction de la taille du message
                     buffer.resize(MESSAGE, 0);
