@@ -46,7 +46,7 @@ impl Programme
 }
 */
 
-fn encryption(message: String) -> String {
+fn encrypt(message: String) -> String {
     let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
     let mut buf = vec![0; rsa.size() as usize];
     let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
@@ -54,7 +54,7 @@ fn encryption(message: String) -> String {
     message.to_string()
 }
 
-fn decryption(encrypted_message: String) -> String {
+fn decrypt(encrypted_message: String) -> String {
     let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
     let mut buf_decrypt = vec![0; rsa.size() as usize];
     let message_decrypt = rsa.private_decrypt(encrypted_message.as_bytes(), &mut buf_decrypt, Padding::PKCS1).unwrap();
@@ -124,7 +124,7 @@ fn main()
                         let message = buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
                         let message = String::from_utf8(message).expect("Message utf8 invalide");
 
-                        let message_encrypted = encryption(message);
+                        let message_encrypted = encrypt(message);
 
                         // println!("{message_decrypt}");
 
@@ -151,7 +151,7 @@ fn main()
         }    
             if let Ok(message_encrypted) = receiver.try_recv()
             {
-                let message_decrypted = decryption(message_encrypted);
+                let message_decrypted = decrypt(message_encrypted);
 
                 clients = clients.into_iter().filter_map(|mut client| 
                 {
