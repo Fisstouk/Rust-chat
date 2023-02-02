@@ -47,8 +47,26 @@ fn sleep()
 {
     thread::sleep(Duration::from_millis(100));
 }
+
+fn pseudo() -> String
+{
+    println!("=============================");
+    println!("========== BONJOUR ==========");
+    println!("=============================\n");
+
+    let mut user = String::new();
+    println!("Veuillez entrer votre pseudo :");
+    let stdin = io::stdin();
+    stdin.read_line(&mut user);
+    println!("Bonjour, {}", user);
+
+    user
+}
+
+
 fn main() 
 {
+    let mut username: String = pseudo();
     //let programme = Programme::new("Programme Client".to_string());
     // Connexion du client mutable sur notre adresse IP indiqué dans HOST
     let mut client = match TcpStream::connect(HOST)
@@ -84,7 +102,7 @@ fn main()
                 // Tous ceux qui sont égales à zéro seront défait
                 let message = client_buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
                 let message = str::from_utf8(&message).unwrap();
-                println!("Message :{:?}", message);
+		println!("{}",message);
             },
             // Si le type d'erreur est égale à une erreur qui bloquerait notre non-bloquage, nous renvoyons alors le type d'unite
             Err(ref erreur) if erreur.kind() == ErrorKind::WouldBlock => (),
@@ -120,9 +138,6 @@ fn main()
         sleep();
     });
     // Affichage lors de l'ouverture du client
-    println!("=============================");
-    println!("========== BONJOUR ==========");
-    println!("=============================");
 
     loop 
     {
@@ -133,10 +148,13 @@ fn main()
         io::stdin().read_line(&mut buffer).expect("Echec de lecture stdin");
 
         // On coupe le buffer et on utilise le string pour la mettre dans une variable "message"
-        let message = buffer.trim().to_string();
-
+        let mut full_message = username.clone();
+	full_message.pop();
+	let message = buffer.trim().to_string();
+	full_message.push_str(" : ");
+	full_message.push_str(&message);
         // Si le message est "exit", alors on sort de la boucle
-        if message == "exit" || sender.send(message).is_err() 
+        if message == "exit" || sender.send(full_message).is_err() 
         {
             break
         }
