@@ -46,16 +46,14 @@ impl Programme
 }
 */
 
-fn encrypt(message: String) -> String {
-    let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
+pub fn encrypt(message: String, rsa: Rsa<T>) -> String {
     let mut buf = vec![0; rsa.size() as usize];
     let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1).unwrap();
 
     message.to_string()
 }
 
-fn decrypt(encrypted_message: String) -> String {
-    let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
+pub fn decrypt(encrypted_message: String, rsa: Rsa<T>) -> String {
     let mut buf_decrypt = vec![0; rsa.size() as usize];
     let message_decrypt = rsa.private_decrypt(encrypted_message.as_bytes(), &mut buf_decrypt, Padding::PKCS1).unwrap();
 
@@ -63,13 +61,14 @@ fn decrypt(encrypted_message: String) -> String {
 }
 
 // La fonction sleep permet de notre thread de dormir un instant (100 milisecondes)
-fn sleep()
+pub fn sleep()
 {
     thread::sleep(Duration::from_millis(100));
 }
 
-fn main()
+pub fn main()
 {
+    let rsa = Rsa::generate(2048).expect("Erreur: impossible de générer la clé RSA");
     //let programme = Programme::new("Programme Serveur".to_string());
     // Serveur
     let listener = match TcpListener::bind(HOST)
@@ -123,8 +122,9 @@ fn main()
                         // On convertit une tranche de String en une réelle String
                         let message = buffer.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
                         let message = String::from_utf8(message).expect("Message utf8 invalide");
-
-                        let message_encrypted = encrypt(message);
+                        
+                        
+                        let message_encrypted = encrypt(message, rsa);
 
                         // println!("{message_decrypt}");
 
@@ -151,7 +151,7 @@ fn main()
         }    
             if let Ok(message_encrypted) = receiver.try_recv()
             {
-                let message_decrypted = decrypt(message_encrypted);
+                let message_decrypted = decrypt(message_encrypted,rsa);
 
                 clients = clients.into_iter().filter_map(|mut client| 
                 {
@@ -171,3 +171,29 @@ fn main()
         }
 }
 
+#[cfg(test)]
+
+mod tests {
+
+    use super::*;
+    #[test]
+    fn encrypt_ok() -> String {
+        let message: String = String::from("Test");
+        let rsa = Rsa::generate(2048);
+        let mut buf = vec![0; rsa.size() as usize];
+        let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1);
+        assert!(message);
+        message.to_string()
+    }
+
+    #[test]
+    fn decrypt_ok() -> String {
+        let message: String = String::from("Test");
+        let rsa = Rsa::generate(2048);
+        let mut buf = vec![0; rsa.size() as usize];
+        let message = rsa.public_encrypt(message.as_bytes(), &mut buf, Padding::PKCS1);
+        let message = rsa.private_decrypt(encrypted_message.as_bytes(), &mut buf_decrypt, Padding::PKCS1);
+        assert!(message);
+        message.to_string()
+    }
+}
