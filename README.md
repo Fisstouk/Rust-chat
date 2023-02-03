@@ -14,7 +14,7 @@ Dans la brance `main` vous trouverez les éléments suivants:
 
 ### Branche `Mathis`
 
-* Chiffrement à la main qui résulte par un panic dès les messages sont échangés
+* Chiffrement à la main qui résulte par un panic dès que les messages sont échangés
 
 ### Branche `lyronn-encrypt`
 
