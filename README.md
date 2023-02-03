@@ -22,6 +22,6 @@ Dans la brance `main` vous trouverez les éléments suivants:
 * Erreur au niveau des signatures des fonctions `encrypt` et `decrypt`: cannot find type `T` in this scope
 not found in this scope`
 
-### Branche feature/username
+### Branche `feature/username
 
 * Proposer à l'utilisateur un choix de couleur qui sera affichée pour son pseudo
