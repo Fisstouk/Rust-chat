@@ -15,6 +15,11 @@ Dans la brance `main` vous trouverez les éléments suivants:
 ### Branche `Mathis`
 
 * Chiffrement à la main qui résulte par un panic dès que les messages sont échangés
+* Erreur lors de l'échange:
+
+```
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: BlockModeError', serveur\src\main.rs:69:57
+```
 
 ### Branche `lyronn-encrypt`
 
