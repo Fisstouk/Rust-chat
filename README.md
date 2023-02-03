@@ -29,4 +29,4 @@ not found in this scope
 ### Branche `feature/username`
 
 * Proposer à l'utilisateur un choix de couleur qui sera affichée pour son pseudo
-* Problème au niveau du retour de la fonction 
+* Problème au niveau du retour de la fonction `color` 
