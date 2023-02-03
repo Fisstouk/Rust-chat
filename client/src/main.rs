@@ -5,6 +5,9 @@ use std::process;
 use std::str;
 use std::sync::mpsc::{self, TryRecvError};
 use std::time::Duration;
+use ansi_term::{Colour, Style};
+
+extern crate ansi_term;
 
 // L'adresse et le port
 const HOST: &str = "127.0.0.1:8080";
@@ -42,6 +45,53 @@ impl Programme
     }
 }
  */
+
+ enum TextColor {
+    Red = 1,
+    Green = 2,
+    Blue = 3,
+    Default,
+}
+
+fn pseudo() -> String
+{
+    println!("=============================");
+    println!("========== BONJOUR ==========");
+    println!("=============================\n");
+
+    let mut user = String::new();
+    println!("Veuillez entrer votre pseudo :");
+    let stdin = io::stdin();
+    stdin.read_line(&mut user);
+
+    println!("Choisissez une couleur pour votre pseudo :");
+    println!("1. Rouge");
+    println!("2. Vert");
+    println!("3. Bleu");
+
+    let mut color_choice = String::new();
+    stdin.read_line(&mut color_choice);
+    let color_choice = color_choice.trim().parse::<i32>().unwrap();
+
+    let color = match color_choice {
+        1 => TextColor::Red,
+        2 => TextColor::Green,
+        3 => TextColor::Blue,
+        _ => TextColor::Default,
+    };
+
+   Style::new().fg(match color {
+        TextColor::Red => Colour::Red,
+        TextColor::Green => Colour::Green,
+        TextColor::Blue => Colour::Blue,
+        TextColor::Default => Colour::White,
+    }).paint(format!("Bonjour, {}", user)).to_string();
+
+    user
+}
+
+
+
 // La fonction sleep permet de notre thread de dormir un instant (100 milisecondes)
 fn sleep()
 {
