@@ -23,6 +23,7 @@ thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: BlockMod
 
 ### Branche `lyronn-encrypt`
 
+* Tests dans le fichier `serveur/src/main.rs`, à la fin de celui-ci en commentaires
 * Utilisation de la bibliothèque `openssl::rsa`
 * Erreur au niveau des signatures des fonctions `encrypt` et `decrypt`: 
 
