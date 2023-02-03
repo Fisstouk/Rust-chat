@@ -32,7 +32,7 @@ cannot find type `T` in this scope
 not found in this scope
 ``` 
 
-### Branche `feature/username`
+### Branche `feature/text_color`
 
 * Proposer à l'utilisateur un choix de couleur qui sera affichée pour son pseudo
 * Problème au niveau du retour de la fonction `color` 
