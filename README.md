@@ -4,7 +4,7 @@ Logiciel de chat en temps réel, à utiliser en ligne de commande
 
 ## Ce qui fonctionne
 
-Dans la brance `main` vous trouverez les éléments suivants:
+Dans la branche `main` vous trouverez les éléments suivants:
 * Une arborescence avec un serveur et un client dans des dossiers distincts
 * Un serveur fonctionnel avec la possibilité de lancer en même temps deux clients
 * Il est possible de lancer le serveur et les deux clients sur la même machine, dans des terminaux différents
